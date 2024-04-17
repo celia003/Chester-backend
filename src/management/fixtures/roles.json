@@ -1,0 +1,25 @@
+[  {
+    "model": "management.role",
+    "pk": 1,
+    "fields": {
+      "name": "Administrator",
+      "order": "1"
+    }
+  },
+  {
+    "model": "management.role",
+    "pk": 2,
+    "fields": {
+      "name": "Staff",
+      "order": "2"
+    }
+  },
+  {
+    "model": "management.role",
+    "pk": 3,
+    "fields": {
+      "name": "Client",
+      "order": "3"
+    }
+  }
+]

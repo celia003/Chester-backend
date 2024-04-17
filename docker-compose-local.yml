@@ -1,0 +1,60 @@
+version: '3.11'
+
+services:
+  db_local:
+    image: "postgres:15-alpine"
+    restart: always
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      # - .env_db
+
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Sia1234567$
+      - POSTGRES_DB=app
+      - PGPORT= 5433
+    ports:
+      - "5433:5433"
+    expose:
+      - 5433
+    command: -p 5433
+    volumes:
+      - ./data/postgres_data:/var/lib/postgresql/data/
+  web:
+    container_name: web_app
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    command: sh -c "uvicorn app.asgi:application --proxy-headers --host 0.0.0.0 --port 8001"
+    restart: always
+    depends_on:
+      - db_local
+  nginx:
+    build: ./config/nginx
+    container_name: nginx_app
+    restart: always
+    mem_limit: 512m
+    mem_reservation: 128M
+    volumes:
+      - ./config/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./data/app/statics:/static/assets
+      - ./logs/nginx:/var/log/nginx
+    ports:
+      - 8087:87
+    depends_on:
+      - web
+  # pgadmin:
+  #   image: dpage/pgadmin4:4.23
+  #   restart: always
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: admin1@pgadmin.com
+  #     PGADMIN_DEFAULT_PASSWORD: password1
+  #     PGADMIN_LISTEN_PORT: 80
+  #   ports:
+  #     - 15432:80
+  #   volumes:
+  #     - pgadmin:/var/lib/pgadmin
+  #   depends_on:
+  #     - db_local
+volumes:
+  postgres_data:
+  # pgadmin:
